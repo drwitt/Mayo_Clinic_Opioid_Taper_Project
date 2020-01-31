@@ -8,6 +8,7 @@ Created on Sun Jan  6 11:05:22 2019
 import pandas as pd 
 import numpy as np
 
+print("Docker is magic!")
 
 # import xlwt 
 # from xlwt import Workbook 
