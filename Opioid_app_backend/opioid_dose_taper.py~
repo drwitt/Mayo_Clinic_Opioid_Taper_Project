@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jan  6 12:10:30 2019
+
+@author: dannywitt
+"""
+from patient_information import Patient
+
+class Taper(Patient):
+    '''Class designed to
+    '''
+    
+    def __init__(self,
+                 a_unique_patient):
+        #Drug 1: primary med
+        if a_unique_patient.primary_opioid_med != None:
+            self.total_primary_med_dose = a_unique_patient.total_primary_opioid_dose_per_24_hr
+            self.previous_primary_med_dose = self.total_primary_med_dose
+            self.new_primary_med_dose = self.Execute_taper(self.total_primary_med_dose)
+            a_unique_patient.total_primary_opioid_dose_per_24_hr = self.new_primary_med_dose
+        
+        #Drug 2: secondary med
+        if a_unique_patient.secondary_opioid_med != None:
+            self.total_secondary_med_dose = a_unique_patient.total_secondary_opioid_dose_per_24_hr
+            self.previous_secondary_med_dose = self.total_secondary_med_dose
+            self.new_secondary_med_dose = self.Execute_taper(self.total_secondary_med_dose)
+            a_unique_patient.total_secondary_opioid_dose_per_24_hr = self.new_secondary_med_dose
+        else:
+            pass
+        
+        #Drug 3: tertiary med
+        if a_unique_patient.tertiary_opioid_med != None:
+            self.total_tertiary_med_dose = a_unique_patient.total_tertiary_opioid_dose_per_24_hr
+            self.previous_tertiary_med_dose = self.total_tertiary_med_dose
+            self.new_tertiary_med_dose = self.Execute_taper(self.total_tertiary_med_dose)
+            a_unique_patient.total_tertiary_opioid_dose_per_24_hr = self.new_tertiary_med_dose
+        else:
+            pass
+        
+        return
+    
+    
+    def Execute_taper(self, total_medication_dose):
+    #Take starting dose of opioid if starting month, or use dose from previous
+    #month for given patient for specific drug type/name
+        
+        new_medication_dose = (total_medication_dose)*(0.9)
+        return new_medication_dose
+    
+    def Sort_medications(self):
+        pass
+    
+                 
+pat_1 = Patient(101, 
+                'Ed',
+                'Heeney',
+                'Morphine Immediate Release Tablet',
+                10,
+                8,
+                'Codeine Acetaminophen',
+                25,
+                4,
+                None,
+                None,
+                None)
+
+taper_1 = Taper(pat_1)
+
+print(pat_1.research_study_timer)
+print('Previous dose (starting): {}'.format(taper_1.previous_primary_med_dose))
+pat_1.research_study_timer.New_month()
+print('New dose (after 1st taper): {}'.format(taper_1.new_primary_med_dose))
+print("Patient's current dose stored in object: {}".format(pat_1.total_primary_opioid_dose_per_24_hr))
+print(taper_1.previous_secondary_med_dose)
+print(taper_1.new_secondary_med_dose)
+print(pat_1.total_secondary_opioid_dose_per_24_hr)
+print('- - - - - - - - - - - - - - ')
+taper_2 = Taper(pat_1)
+print(pat_1.research_study_timer)
+print('Previous dose (after 1st taper): {}'.format(taper_2.previous_primary_med_dose))
+pat_1.research_study_timer.New_month()
+print('New dose (after 2nd taper): {}'.format(taper_2.new_primary_med_dose))
+print("Patient's current dose stored in object: {}".format(pat_1.total_primary_opioid_dose_per_24_hr))
+print(taper_2.previous_secondary_med_dose)
+print(taper_2.new_secondary_med_dose)
+print(pat_1.total_secondary_opioid_dose_per_24_hr)
+print('- - - - - - - - - - - - - - ')
+taper_3 = Taper(pat_1)
+print(pat_1.research_study_timer)
+print('Previous dose (after 2nd taper): {}'.format(taper_3.previous_primary_med_dose))
+pat_1.research_study_timer.New_month()
+print('New dose (after 3rd taper): {}'.format(taper_3.new_primary_med_dose))
+print("Patient's current dose stored in object: {}".format(pat_1.total_primary_opioid_dose_per_24_hr))
+print(taper_3.previous_secondary_med_dose)
+print(taper_3.new_secondary_med_dose)
+print(pat_1.total_secondary_opioid_dose_per_24_hr)
+print(pat_1.research_study_timer)ptp
+ #3. Decrease function:
+            #Decrease MME per dose (and, thus per day) by 10%
+            #Months completed: ascending 0 - 12
+            #Months remaining: descending 12 - 0
+            #If MME = 0:
+                #No change, all placebo dosing
+            #If MME/months remaining > 5 (or, > 60 MME):
+                #decrease MME for current month by 10% from previous month MME
+                #current MME = 0.9(last mo. MME)
+            #Else:
+                #Decrease by 5 MME from previous month's MME
+                #current MME = previous mo. MME - 5 
+##########Using med list (as a list object), should be able to iterate through
+                #and filter extended/immediate release attributes, tramadol, and
+                #ordering of taper priority!!!
+        #4. Long_short_acting function:
+            #If both short acting and long acting opioid use, taper long acting 
+            #to 0 MME first, then initiate short acting taper subsequent:
+                #If long acting opioid dose > 0:
+                    #apply decrease function to only long acting MME
+                    #If step down of long-acting total dose (based on minimum
+                    #available tablet/capsule size for given med name is
+                    #greater than expected decrease (from tapering function):
+                        #add short-acting increase MME to achieve expected 
+                        #decrease (if no current short-acting, then add short-
+                        #acting of same medication as long-acting)
+                    #Else:
+                        #keep short-acting MME and dose the same
+                #Else:
+                    #If long acting opioid dose = 0:
+                        #apply decrease function to only short acting MME
+                        
+        #5. Tramadol_use function:
+            #If tramadol is used in conjunction with another opioid, taper
+            #other opioid first then tramadol always last
+            #If tramadol used:
+                #apply long_short_acting and decreasefunction to 
+                #non-tramadol meds
+            #Else:
+                #pass
+                
+        #6. Taper_order of priority function:
+            #oxycodone > oxymorphone > hydromorphone > morphine > hydrocodone >
+            #codeine > tramadol 
+        
+
+    
+
+ 
