@@ -7,293 +7,93 @@ Created on Sun Jan  6 11:05:22 2019
 """
 import pandas as pd
 import numpy as np
+from RedCapAPI.execute_api import api_url, api_key, deliver_payload
 
-print("Docker is magic!")
+#from Opioid_app_backend.construct_patients import Patient_Builder
 
-import RedCapAPI as redcap
+from Opioid_app_backend.patient_information import Patient
+from Opioid_app_backend.opioid_dose_taper import Taper
+from Opioid_app_backend.print_report import Print_monthly_report
+from Opioid_app_backend.prescription import Prescription
 
-api_url = 'https://redcapcln4-prod.mayo.edu/redcap/api/'
-api_key = 'DEBB8885432E076DFCBA7BE262B8B228'
+from Opioid_app_backend.medication import (Hydrocodone_Acetaminophen,
+                                            Hydromorphone_Immediate_Release,
+                                            Morphine_Immediate_Release,
+                                            Morphine_Extended_Release,
+                                            Oxycodone_Immediate_Release,
+                                            Oxycodone_Extended_Release,
+                                            Oxycodone_Acetaminophen,
+                                            Tramadol_Immediate_Release
+                                            )
 
-# Init the project with the api url and your specific api key
-project = redcap.Project(api_url, api_key)
+print('Running main.py...')
 
-# Export all data
-all_data = project.export_records()
+###############################################################################
+###############################################################################
+def main():
+    #Launch api GET call (RedCap to local server):
+    payload = deliver_payload(api_url, api_key)
+    # payload = {'patient_1' : {'name': 'Joe',
+    #                           'med': 'Hydrocodone',
+    #                           'dose': 20
+    #                           },
+    #            'patient_2' : {'name': 'Frank',
+    #                           'med': 'Smack',
+    #                           'dose': 10
+    #                           }
+    #           }
+    print(payload)
+    #Ingest payload, check data, and construct patient instances:
+    #patient_obj_list = Patient_Builder(payload)
 
-print(all_data)
-# import xlwt
-# from xlwt import Workbook
+    #print(patient_obj_list)
+    #Apply taper:
 
-# from patient_information import Patient
-# from opioid_dose_taper import Taper
-# from print_report import Print_monthly_report
-# from prescription import Prescription
+    #Organize/format data for return to RedCap:
 
-# from medication import (Hydrocodone_Acetaminophen,
-#                         Hydromorphone_Immediate_Release,
-#                         Morphine_Immediate_Release,
-#                         Morphine_Extended_Release,
-#                         Oxycodone_Immediate_Release,
-#                         Oxycodone_Extended_Release,
-#                         Oxycodone_Acetaminophen,
-#                         Tramadol_Immediate_Release
-#                         )
+    #Launch api PUSH call (local server to RedCap):
 
-# #Functions:
+    #Generate taper report:
 
-# def Assign_med_class(opioid_med_string):
-#         drug_name_to_object_dictionary = {'Hydrocodone_Acetaminophen': Hydrocodone_Acetaminophen(),
-#                                       'Hydromorphone_Immediate_Release': Hydromorphone_Immediate_Release(),
-#                                       'Morphine_Immediate_Release': Morphine_Immediate_Release(),
-#                                       'Morphine_Extended_Release': Morphine_Extended_Release(),
-#                                       'Oxycodone_Immediate_Release': Oxycodone_Immediate_Release(),
-#                                       'Oxycodone_Extended_Release': Oxycodone_Extended_Release(),
-#                                       'Oxycodone_Acetaminophen': Oxycodone_Acetaminophen(),
-#                                       'Tramadol_Immediate_Release': Tramadol_Immediate_Release(),
-#                                       None : None}
+    #Safety Check:
 
-#         for drug_name in drug_name_to_object_dictionary:
-#             if drug_name == opioid_med_string:
-#                 return drug_name_to_object_dictionary[drug_name]
-#             else:
-#                 pass
-#             pass
-#         pass
+    return
 
-# ###################################################################
+if __name__ == '__main__':
+    main()
 
-# opioid_df = pd.read_excel("/Users/dannywitt/Desktop/Opioid_project/Opioid_data.xlsx")
-
-# ##Importing excel files########
-# #from patient_information import Patient
-
-# #Input correct number of active patients in trial (corresponding to Excel file):
-# number_of_patients = 3
-
-# #Generate patient identification for individual patient instances:
-# instanceNames = []
-# for patient_row in range(1,number_of_patients+1):
-#     instanceNames.append('Patient_{}'.format(patient_row))
-
-# patient_instances = []
-# for patient_row in range(number_of_patients):
-#     #Initialize a patient instance:
-#     #Include ID number, First name, Last name:
-#     patient_instances.append(Patient(opioid_df.iloc[patient_row]['Patient_ID'],
-#                                      opioid_df.iloc[patient_row]['Patient_First_Name'],
-#                                      opioid_df.iloc[patient_row]['Patient_Last_Name']))
-
-#     patient_instances[patient_row].primary_opioid_med = Assign_med_class((opioid_df.iloc[patient_row]['Med_1']))
-#     patient_instances[patient_row].primary_opioid_med_name = opioid_df.iloc[patient_row]['Med_1']
-
-#     #Load constant daily episode dose information:
-#     patient_instances[patient_row].primary_opioid_episode_dose =  opioid_df.iloc[patient_row]['Dose_med_1_constant_daily_episode_dose']
-#     patient_instances[patient_row].primary_opioid_captab_per_episode_dose = opioid_df.iloc[patient_row]['Count_tabs_or_capsules_med_1_constant_daily_episode_dose']
-#     patient_instances[patient_row].primary_opioid_interdose_duration = opioid_df.iloc[patient_row]['Frequency_dose_med_1']
-#     patient_instances[patient_row].primary_opioid_unit_dose = opioid_df.iloc[patient_row]['Constant_dose_med_1_unit_dose']
-#     if opioid_df.iloc[patient_row]['Different_daily_episode_doses_med_1?'] == 'Yes, episode doses differ during day.':
-#         patient_instances[patient_row].different_daily_episode_doses_med_1 = 'Yes'
-#         pass
-#     elif opioid_df.iloc[patient_row]['Different_daily_episode_doses_med_1?'] == 'No, each episode dose is the same.':
-#         patient_instances[patient_row].different_daily_episode_doses_med_1 = 'No'
-#         pass
-#     else:
-#         pass
-
-#     #Load non-constant daily episode dose information:
-
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_1 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_episode_dose_1']
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_2 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_episode_dose_2']
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_3 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_episode_dose_3']
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_4 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_episode_dose_4']
-
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_1 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_1_episode_dose_1']
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_2 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_1_episode_dose_2']
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_3 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_1_episode_dose_3']
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_4 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_1_episode_dose_4']
-
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_1_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_unit_dose_episode_1']
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_2_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_unit_dose_episode_2']
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_3_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_unit_dose_episode_3']
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_4_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_1_unit_dose_episode_4']
-
-#     #Load constant daily episode dose information:
-
-#     patient_instances[patient_row].secondary_opioid_med = Assign_med_class(opioid_df.iloc[patient_row]['Med_2'])
-#     patient_instances[patient_row].secondary_opioid_med_name = opioid_df.iloc[patient_row]['Med_2']
-#     patient_instances[patient_row].secondary_opioid_episode_dose =  opioid_df.iloc[patient_row]['Dose_med_2_constant_daily_episode_dose']
-#     patient_instances[patient_row].secondary_opioid_captab_per_episode_dose = opioid_df.iloc[patient_row]['Count_tabs_or_capsules_med_2_constant_daily_episode_dose']
-#     patient_instances[patient_row].secondary_opioid_interdose_duration = opioid_df.iloc[patient_row]['Frequency_dose_med_2']
-#     patient_instances[patient_row].secondary_opioid_unit_dose = opioid_df.iloc[patient_row]['Constant_dose_med_2_unit_dose']
-#     if opioid_df.iloc[patient_row]['Different_daily_episode_doses_med_2?'] == 'Yes, episode doses differ during day.':
-#         patient_instances[patient_row].different_daily_episode_doses_med_2 = 'Yes'
-#         pass
-#     elif opioid_df.iloc[patient_row]['Different_daily_episode_doses_med_2?'] == 'No, each episode dose is the same.':
-#         patient_instances[patient_row].different_daily_episode_doses_med_2 = 'No'
-#         pass
-#     else:
-#         pass
-
-# #    #Convert 'nan' string to None object if present in episode dose or capsule count:
-# #    if np.isnan(patient_instances[patient_row].secondary_opioid_episode_dose):
-# #        patient_instances[patient_row].secondary_opioid_episode_dose = None
-# #        pass
-# #    else:
-# #        pass
-# #
-# #    if np.isnan(patient_instances[patient_row].secondary_opioid_captab_per_episode_dose):
-# #        patient_instances[patient_row].secondary_opioid_captab_per_episode_dose = None
-# #        pass
-# #    else:
-# #        pass
+###############################################################################
+###############################################################################
 
 
 
-#     if opioid_df.iloc[patient_row]['Different_daily_episode_doses_med_2?'] == 'Yes, episode doses differ during day.':
-#         patient_instances[patient_row].different_daily_episode_doses_med_2 = 'Yes'
-#         pass
-#     elif opioid_df.iloc[patient_row]['Different_daily_episode_doses_med_2?'] == 'No, each episode dose is the same.':
-#         patient_instances[patient_row].different_daily_episode_doses_med_2 = 'No'
-#         pass
-#     else:
-#         pass
-
-#     #Load non-constant daily episode dose information:
-
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_1 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_episode_dose_1']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_2 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_episode_dose_2']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_3 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_episode_dose_3']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_4 =  opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_episode_dose_4']
 
 
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_1 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_2_episode_dose_1']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_2 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_2_episode_dose_2']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_3 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_2_episode_dose_3']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_4 =  opioid_df.iloc[patient_row]['Nonconstant_dose_count_tabs_or_capsules_med_2_episode_dose_4']
-
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_1_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_unit_dose_episode_1']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_2_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_unit_dose_episode_2']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_3_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_unit_dose_episode_3']
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_4_unit_dose = opioid_df.iloc[patient_row]['Nonconstant_dose_med_2_unit_dose_episode_4']
-
-#     episode_dose_list = [patient_instances[patient_row].primary_opioid_episode_dose,
-#                           patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_1,
-#                           patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_2,
-#                           patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_3,
-#                           patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_4,
-#                           patient_instances[patient_row].secondary_opioid_episode_dose,
-#                           patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_1,
-#                           patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_2,
-#                           patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_3,
-#                           patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_4
-#                           ]
-
-#     captab_list = [patient_instances[patient_row].primary_opioid_captab_per_episode_dose,
-#                   patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_1,
-#                   patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_2,
-#                   patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_3,
-#                   patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_4,
-#                   patient_instances[patient_row].secondary_opioid_captab_per_episode_dose,
-#                   patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_1,
-#                   patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_2,
-#                   patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_3,
-#                   patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_4
-#                   ]
-
-#     unit_dose_list = [patient_instances[patient_row].primary_opioid_unit_dose,
-#                       patient_instances[patient_row].primary_opioid_dif_dose_ep_1_unit_dose,
-#                       patient_instances[patient_row].primary_opioid_dif_dose_ep_2_unit_dose,
-#                       patient_instances[patient_row].primary_opioid_dif_dose_ep_3_unit_dose,
-#                       patient_instances[patient_row].primary_opioid_dif_dose_ep_4_unit_dose,
-#                       patient_instances[patient_row].secondary_opioid_unit_dose,
-#                       patient_instances[patient_row].secondary_opioid_dif_dose_ep_1_unit_dose,
-#                       patient_instances[patient_row].secondary_opioid_dif_dose_ep_2_unit_dose,
-#                       patient_instances[patient_row].secondary_opioid_dif_dose_ep_3_unit_dose,
-#                       patient_instances[patient_row].secondary_opioid_dif_dose_ep_4_unit_dose
-#                       ]
-#     #Remove nans:
-#     for i, var in enumerate(episode_dose_list):
-#         if np.isnan(var):
-#             episode_dose_list[i] = None
-#             pass
-#         else:
-#             pass
-#         pass
-
-#     for i, var in enumerate(captab_list):
-#         if np.isnan(var):
-#             captab_list[i] = None
-#             pass
-#         else:
-#             pass
-#         pass
-
-#     #Make all unit doses into list objects:
-
-#     for i, var in enumerate(unit_dose_list):
-#         if isinstance(var, float):
-#             if np.isnan(var):
-#                 #print(var)
-#                 unit_dose_list[i] = None
-#                 pass
-#             else:
-#                 unit_dose_list[i] = var
-#                 pass
-#             pass
-#         elif isinstance(var, str):
-#             x =  var.strip('(').strip(')').replace(' ', '').split(',')
-#             if '' in x:
-#                 x.remove('')
-#                 pass
-#             else:
-#                 pass
-#             unit_dose_list[i] = list(map(float, x))
-#             pass
-#         else:
-#             unit_dose_list[i] = var
-#             pass
-#         pass
-
-#     #Generate updated cleaned variables:
-#     patient_instances[patient_row].primary_opioid_episode_dose = episode_dose_list[0]
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_1 = episode_dose_list[1]
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_2 = episode_dose_list[2]
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_3 = episode_dose_list[3]
-#     patient_instances[patient_row].primary_opioid_dif_dose_episode_dose_4 = episode_dose_list[4]
-#     patient_instances[patient_row].secondary_opioid_episode_dose = episode_dose_list[5]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_1 = episode_dose_list[6]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_2 = episode_dose_list[7]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_3 = episode_dose_list[8]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_episode_dose_4 = episode_dose_list[9]
 
 
-#     patient_instances[patient_row].primary_opioid_captab_per_episode_dose = captab_list[0]
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_1 = captab_list[1]
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_2 = captab_list[2]
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_3 = captab_list[3]
-#     patient_instances[patient_row].primary_opioid_dif_dose_captab_per_episode_dose_4 = captab_list[4]
-#     patient_instances[patient_row].secondary_opioid_captab_per_episode_dose = captab_list[5]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_1 = captab_list[6]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_2 = captab_list[7]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_3 = captab_list[8]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_captab_per_episode_dose_4 = captab_list[9]
 
 
-#     patient_instances[patient_row].primary_opioid_unit_dose = unit_dose_list[0]
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_1_unit_dose = unit_dose_list[1]
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_2_unit_dose = unit_dose_list[2]
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_3_unit_dose = unit_dose_list[3]
-#     patient_instances[patient_row].primary_opioid_dif_dose_ep_4_unit_dose = unit_dose_list[4]
-#     patient_instances[patient_row].secondary_opioid_unit_dose = unit_dose_list[5]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_1_unit_dose = unit_dose_list[6]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_2_unit_dose = unit_dose_list[7]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_3_unit_dose = unit_dose_list[8]
-#     patient_instances[patient_row].secondary_opioid_dif_dose_ep_4_unit_dose = unit_dose_list[9]
 
-#     pass
 
-# patient_dictionary = dict(zip(instanceNames, patient_instances))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ###########

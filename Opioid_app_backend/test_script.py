@@ -8,11 +8,11 @@ Created on Sun Jan  6 17:32:25 2019
 
 #Test
 
-from medication import Medication
-from opioid_dose_taper import Opioid_taper_calculator 
-from prescription import Prescription
-from Dosing_specifications import Dosing_specifications
-from Patient_information import Patient
+from Opioid_app_backend.medication import Medication
+from Opioid_app_backend.opioid_dose_taper import Opioid_taper_calculator
+from Opioid_app_backend.prescription import Prescription
+from Opioid_app_backend.Dosing_specifications import Dosing_specifications
+from Opioid_app_backend.Patient_information import Patient
 
 #test_dosage_specs = Dosing_specifications(10, 2)
 #
@@ -26,7 +26,7 @@ from Patient_information import Patient
 #
 #med_acetaminophen = Medication('Codeine Acetaminophen', 'Immediate Release', 15, 'Tablet', [60, 30, 15], 15)
 #
-##Print entire namespace: 
+##Print entire namespace:
 #print(med_acetaminophen.__dict__)
 #
 #print(med_acetaminophen.Full_drug_name())
@@ -37,8 +37,8 @@ from Patient_information import Patient
 #print(med_acetaminophen.minimum_dose_available)
 #print(med_acetaminophen.available_opioid_doses)
 
-#patient_1 = Patient(1000101, 
-#                    'Harry', 
+#patient_1 = Patient(1000101,
+#                    'Harry',
 #                    'Winkler',
 #                    'Codeine',
 #                    15,
