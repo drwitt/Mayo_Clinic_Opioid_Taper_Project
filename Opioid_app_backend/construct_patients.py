@@ -1,99 +1,130 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#from Opioid_app_backend.patient_information import Patient
+from Opioid_app_backend.patient_information import Patient
 
-# class Patient_Builder(self, json_payload):
-#     """
-#     """
-#     def __init__(self):
-#         self.payload = json_payload
-#         self.build_patients()
-#         return
-#
-#     def assign_patient_instance(self, patient_id, json_block):
-#         """
-#         Harvest data from json payload to build a patient class instance object.
-#         """
-#         #Make patient class instance:
-#         patient = Patient()
-#
-#         #Assign patient attributes:
-#
-#         #Assign patient medication class:
-#         patient.primary_opioid_med = self.assign_med_class()
-#
-#         #etc.
-#         print('assigning patient instance')
-#
-#         return
-#
-#     def assign_med_class(self, opioid_med_string):
-#         """Convert opioid medication string name into medication class instance.
-#
-#         Args:
-#           opioid_med_string: a string variable with name of available opioid
-#           medication.
-#
-#         Returns:
-#           A medication class object corresponding to the string arg.
-#
-#         Raises:
-#           ValueError: If no available medication string passed as arg.
-#
-#         """
-#         drug_name_to_object_dictionary = {'Hydrocodone Acetaminophen':\
-#                                                 Hydrocodone_Acetaminophen(),\
-#                                           'Hydromorphone Immediate Release':\
-#                                                 Hydromorphone_Immediate_Release(),\
-#                                           'Morphine Immediate Release':\
-#                                                 Morphine_Immediate_Release(),\
-#                                           'Morphine Extended Release':\
-#                                                 Morphine_Extended_Release(),\
-#                                           'Oxycodone Immediate Release':\
-#                                                 Oxycodone_Immediate_Release(),\
-#                                           'Oxycodone Extended Release':\
-#                                                 Oxycodone_Extended_Release(),\
-#                                           'Oxycodone Acetaminophen':\
-#                                                 Oxycodone_Acetaminophen(),\
-#                                           'Tramadol Immediate Release':\
-#                                                 Tramadol_Immediate_Release()
-#                                           }
-#
-#         #Check string is in dictionary keys; if yes, assign string to return class
-#         #instance of corresponding medication; if no, assign None value
-#
-#         if opioid_med_string in list(drug_name_to_object_dictionary.keys()):
-#             return drug_name_to_object_dictionary[opioid_med_string]
-#         else:
-#             return None
-#
-#     def build_patients(self):
-#         patient_list = []
-#         for patient_id, info_block in self.payload:
-#             patient_obj = self.assign_patient_instance(patient_id, info_block)
-#             patient_list.append(patient_obj)
-#         print('patients constructed.')
-#         return patient_list
-#
-#     def data_check(self):
-#         #Check ingested data:
-#         # med_string = input('Enter med name:')
-#         # print(type(med_string))
-#         #
-#         # #Assert opioid_med_string is a string object type:
-#         # while True:
-#         #     try:
-#         #         assert isinstance(med_string, str)
-#         #         break
-#         #     except TypeError:
-#         #         print("Oops!  That was not a valid string.  Try again...")
-#         #
-#         #
-#         # #Assign patient and med class instances:
-#         # med_obj = Assign_med_class(med_string)
-#         #
-#         # print(med_obj)
-#         return
+from Opioid_app_backend.medication import (Hydrocodone_Acetaminophen,
+                                            Hydromorphone_Immediate_Release,
+                                            Morphine_Immediate_Release,
+                                            Morphine_Extended_Release,
+                                            Oxycodone_Immediate_Release,
+                                            Oxycodone_Extended_Release,
+                                            Oxycodone_Acetaminophen,
+                                            Tramadol_Immediate_Release)
+class Patient_Builder():
+    """
+    """
+    def __init__(self, payload):
+        self.payload = payload
+        return
+
+    def assign_patient_instance(self, patient_info_blob):
+        """
+        Harvest data from json payload to build a patient class instance object.
+        """
+        #Assign patient attributes:
+        #Variables coming in from API:
+        {'name_first': 'John', 'name_last': 'Wernt', 'id_num': '101',
+        'prim_opioid_name': '1', 'prim_opioid_cnt_daily_dose': '',
+        'prim_opioid_const_ep_dose': '', 'prim_opioid_dose_freq': '8',
+        'prim_opioid_episode_dose': '', 'prim_opioid_const_ep_unit_dose': '',
+        'prim_opioid_const_ep_capsule_cnt': '', 'prim_opioid_episode_dose_1': '20',
+        'prim_opioid_ep_1_unit_dose': '', 'prim_opioid_ep_1_capsule_cnt': '',
+        'prim_opioid_episode_dose_2': '20', 'prim_opioid_ep_2_unit_dose': '',
+        'prim_opioid_ep_2_capsule_cnt': '', 'prim_opioid_episode_dose_3': '20',
+        'prim_opioid_ep_3_unit_dose': '', 'prim_opioid_ep_3_capsule_cnt': '',
+        'prim_opioid_episode_dose_4': '0', 'prim_opioid_ep_4_unit_dose': '',
+        'prim_opioid_ep_4_capsule_cnt': '', 'sec_opioid_name': '4',
+        'sec_opioid_episode_dose_1': '10', 'sec_opioid_episode_dose_2': '10',
+        'sec_opioid_episode_dose_3': '0', 'sec_opioid_episode_dose_4': '0',
+        'sec_opioid_dose_freq': '12', 'sec_opioid_ep_unit_dose': '5',
+        'sec_opioid_ep_capsule_cnt': '2'}
+
+
+        #First name:
+        first_name = patient_info_blob['name_first']
+
+        #Last name:
+        last_name = patient_info_blob['name_last']
+
+        #Id number:
+        id_num = patient_info_blob['id_num']
+
+        #Make patient class instance:
+        patient = Patient(id_num, first_name, last_name)
+
+        #Primary opioid med:
+        #Assign patient medication class:
+        primary_med = patient_info_blob['prim_opioid_name']
+        patient.primary_opioid_med = self.assign_med_class(primary_med)
+
+        #Secondary opioid med:
+        #Assign patient medication class:
+        secondary_med = patient_info_blob['sec_opioid_name']
+        patient.secondary_opioid_med = self.assign_med_class(primary_med)
+
+        #etc.
+        print('assigning patient instance')
+
+        return patient
+
+    def assign_med_class(self, opioid_med_value):
+        """Convert opioid medication value into medication class instance.
+
+        Args:
+          opioid_med_string: an int variable corresponding to available opioid
+          medication (mapped from RedCap entry)
+
+        Returns:
+          A medication class object corresponding to the value arg.
+
+        Raises:
+          ValueError: If no available medication value passed as arg.
+
+        """
+        drug_value_map = {'1': Hydrocodone_Acetaminophen(),\
+                          '2': Hydromorphone_Immediate_Release(),\
+                          '3': Morphine_Immediate_Release(),\
+                          '4': Morphine_Extended_Release(),\
+                          '5': Oxycodone_Immediate_Release(),\
+                          '6': Oxycodone_Extended_Release(),\
+                          '7': Oxycodone_Acetaminophen(),\
+                          '8': Tramadol_Immediate_Release()
+                           }
+        if opioid_med_value in list(drug_value_map.keys()):
+            return drug_value_map[opioid_med_value]
+        else:
+            return None
+
+    def build_patients(self):
+        patient_obj_list = []
+        for unique_pat_info in self.payload:
+            new_patient = self.assign_patient_instance(unique_pat_info)
+            patient_obj_list.append(new_patient)
+
+        #Generate med class objects:
+        print('patients constructed.')
+
+        return patient_obj_list
+
+    def data_check(self):
+        #Check ingested data:
+        # med_string = input('Enter med name:')
+        # print(type(med_string))
+        #
+        # #Assert opioid_med_string is a string object type:
+        # while True:
+        #     try:
+        #         assert isinstance(med_string, str)
+        #         break
+        #     except TypeError:
+        #         print("Oops!  That was not a valid string.  Try again...")
+        #
+        #
+        # #Assign patient and med class instances:
+        # med_obj = Assign_med_class(med_string)
+        #
+        # print(med_obj)
+        return
 
 # opioid_df = pd.read_excel("/Users/dannywitt/Desktop/Opioid_project/Opioid_data.xlsx")
 

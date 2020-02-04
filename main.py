@@ -7,9 +7,9 @@ Created on Sun Jan  6 11:05:22 2019
 """
 import pandas as pd
 import numpy as np
-from RedCapAPI.execute_api import api_url, api_key, deliver_payload
+from RedCap_API.api_connect import api_get
 
-#from Opioid_app_backend.construct_patients import Patient_Builder
+from Opioid_app_backend.construct_patients import Patient_Builder
 
 from Opioid_app_backend.patient_information import Patient
 from Opioid_app_backend.opioid_dose_taper import Taper
@@ -32,21 +32,15 @@ print('Running main.py...')
 ###############################################################################
 def main():
     #Launch api GET call (RedCap to local server):
-    payload = deliver_payload(api_url, api_key)
-    # payload = {'patient_1' : {'name': 'Joe',
-    #                           'med': 'Hydrocodone',
-    #                           'dose': 20
-    #                           },
-    #            'patient_2' : {'name': 'Frank',
-    #                           'med': 'Smack',
-    #                           'dose': 10
-    #                           }
-    #           }
-    print(payload)
+    payload = api_get()
     #Ingest payload, check data, and construct patient instances:
-    #patient_obj_list = Patient_Builder(payload)
+    patient_obj_list = Patient_Builder(payload).build_patients()
 
-    #print(patient_obj_list)
+    print(patient_obj_list[19].first_name)
+    print(patient_obj_list[19].last_name)
+    print(patient_obj_list[19].ID_number)
+    print(patient_obj_list[19].primary_opioid_med)
+    print(patient_obj_list[19].secondary_opioid_med)
     #Apply taper:
 
     #Organize/format data for return to RedCap:
