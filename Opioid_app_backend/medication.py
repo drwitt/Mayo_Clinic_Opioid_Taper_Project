@@ -5,8 +5,6 @@ Created on Sun Jan  6 11:05:22 2019
 
 @author: dannywitt
 """
-import numpy as np
-import pandas as pd
 
 class Medication:
     

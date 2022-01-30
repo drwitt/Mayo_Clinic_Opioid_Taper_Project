@@ -5,8 +5,6 @@ Created on Sun Jan  6 12:10:30 2019
 
 @author: dannywitt
 """
-import numpy as np
-import pandas as pd
 
 from Opioid_app_backend.patient_information import Patient
 
@@ -95,48 +93,8 @@ class Taper(Patient):
         else:
             self.taper_secondary_med = None
 
-        #Drug 3: tertiary med
-        self.taper_tertiary_med = None
-        self.taper_tertiary_med_episode_dose = None
-        self.taper_tertiary_med_episode_dose_diff_1 = None
-        self.taper_tertiary_med_episode_dose_diff_2 = None
-        self.taper_tertiary_med_episode_dose_diff_3 = None
-        self.taper_tertiary_med_episode_dose_diff_4 = None
-        self.taper_tertiary_med_dose_24 = None
-        self.taper_tertiary_med_MME_24 = None
-
-        #Keep this section, in case 3 medications are used:
-#        if a_unique_patient.tertiary_opioid_med != None:
-#            self.taper_tertiary_med = a_unique_patient.tertiary_opioid_med
-#            self.taper_tertiary_med_episode_dose = a_unique_patient.tertiary_opioid_episode_dose
-#            self.taper_tertiary_med_dose_24 = a_unique_patient.Tertiary_total_dose_per_24_hr()
-#            self.taper_tertiary_med_MME_24 = a_unique_patient.Calculate_med_MME_24_hr(a_unique_patient.tertiary_opioid_episode_dose,
-#                                                                                 a_unique_patient.tertiary_opioid_interdose_duration,
-#                                                                                 a_unique_patient.tertiary_opioid_med.MME_conversion_factor)
-#
-#            #Taper med is patient's tertiary med:
-#            if self.current_taper_med == self.taper_tertiary_med:
-#                self.current_taper_med = self.taper_tertiary_med
-#                self.current_taper_med_dose_24 = self.taper_tertiary_med_dose_24
-#                self.current_taper_med_MME_24 = self.taper_tertiary_med_MME_24
-#            else:
-#                pass
-#
-#            #Update previous dose (pre-taper) as current "previous dose" (post-taper)
-#            #self.previous_tertiary_med_dose = self.taper_tertiary_med_dose_24
-#
-#        else:
-#            self.taper_tertiary_med = None
-
-#        #If all medications are None (i.e., there are no medications actively in
-#        #patient's list) then return all current_taper_med attributes as "None")
-#        if self.taper_primary_med == None and self.taper_secondary_med == None and self.taper_tertiary_med == None:
-#            self.current_taper_med = None
-#            self.current_taper_med_dose_24 = None
-#            self.current_taper_med_MME_24 = None
-
         #Execute actual taper if there are medications in patient's list:
-        if self.taper_primary_med != None or self.taper_secondary_med != None or self.taper_tertiary_med != None:
+        if self.taper_primary_med != None or self.taper_secondary_med != None:
             self.Apply_taper(a_unique_patient, self.current_taper_med)
             pass
         #Otherwise, if no medications in patient's med list, then return all
@@ -468,7 +426,7 @@ class Taper(Patient):
         #Case 2.1: only one medication tapered and not exhausted to 0mg or O MME
         #If current MME of taper drug > post-taper MME of given taper drug, then
         #proceed and update 24-hour dose of given drug, and keep same drug list
-        #and primary, secondary, tertiary meds
+        #and primary/secondary meds
 
         if self.current_taper_med_MME_24 > self.total_taper_MME_difference:
             self.yes_2_meds = False
@@ -539,9 +497,6 @@ class Taper(Patient):
                             pass
                         elif medication[0] == 1:
                             self.current_taper_med_dose_24 = self.taper_secondary_med_dose_24
-                            pass
-                        elif medication[0] == 2:
-                            self.current_taper_med_dose_24 = self.taper_tertiary_med_dose_24
                             pass
                         else:
                             pass

@@ -6,7 +6,6 @@ Created on Tue Jan  8 19:35:11 2019
 @author: dannywitt
 """
 import numpy as np
-import pandas as pd
 
 from Opioid_app_backend.medication import (Hydrocodone_Acetaminophen,
                         Hydromorphone_Immediate_Release,
@@ -47,6 +46,7 @@ class Patient(Hydrocodone_Acetaminophen,
         self.ID_number = ID_number
         self.first_name = first_name
         self.last_name = last_name
+        self.opioid_med_count = None
 
         #Primary opioid medication:
         self.primary_opioid_med = None
@@ -100,6 +100,7 @@ class Patient(Hydrocodone_Acetaminophen,
 
         #Tertiary opioid medication:
         self.tertiary_opioid_med = None
+        self.tertiary_opioid_med_name = None
         self.tertiary_opioid_episode_dose = None
         self.tertiary_opioid_unit_dose = None
         self.tertiary_opioid_captab_per_episode_dose = None
@@ -110,85 +111,20 @@ class Patient(Hydrocodone_Acetaminophen,
             self.tertiary_opioid_dif_dose_episode_dose_1 = None
             self.tertiary_opioid_dif_dose_ep_1_unit_dose = None
             self.tertiary_opioid_dif_dose_captab_per_episode_dose_1 = None
-
             self.tertiary_opioid_dif_dose_episode_dose_2 = None
             self.tertiary_opioid_dif_dose_ep_2_unit_dose = None
             self.tertiary_opioid_dif_dose_captab_per_episode_dose_2 = None
-
             self.tertiary_opioid_dif_dose_episode_dose_3 = None
             self.tertiary_opioid_dif_dose_ep_3_unit_dose = None
             self.tertiary_opioid_dif_dose_captab_per_episode_dose_3 = None
-
             self.tertiary_opioid_dif_dose_episode_dose_4 = None
             self.tertiary_opioid_dif_dose_ep_4_unit_dose = None
             self.tertiary_opioid_dif_dose_captab_per_episode_dose_4 = None
-            self.tertiary_opioid_interdose_duration = None
         else:
             pass
 
         self.research_study_timer = Research_month()
         self.main_prescription_list = None
-
-#        else:
-#            self.primary_opioid_med = None
-#            self.prim_opiod_episode_dose = None
-#            self.prim_opioid_interdose_duration = None
-#            self.total_primary_opioid_dose_per_24_hr = None
-#            self.prim_opioid_MME_24_hr = None
-#
-#        if self.secondary_opioid_med != None:
-#            self.secondary_opioid_med = self.Assign_med_class(self.secondary_opioid_med)
-#            #Raise error if not available medication or handle case when there is
-#            #no secondary medication (i.e., patient only on one med)
-#            #self.secondary_opioid_episode_dose = secondary_opioid_episode_dose
-#            #Have a conditional statement that only assigns secondary dose IF there
-#            #is a second medication; else assign None
-#            #self.secondary_opioid_interdose_duration = secondary_opioid_interdose_duration
-#            #Same as above
-#            self.total_secondary_opioid_dose_per_24_hr = self.Secondary_total_dose_per_24_hr()
-#            #Same as above
-#            self.secondary_opioid_MME_24_hr = self.Calculate_MME_24_hr(self.secondary_opioid_episode_dose,
-#                                                                      self.secondary_opioid_interdose_duration,
-#                                                                      self.secondary_opioid_med.MME_conversion_factor)
-#        else:
-#            self.secondary_opioid_med = None
-#            self.secondary_opiod_episode_dose = None
-#            self.secondary_opioid_interdose_duration = None
-#            self.total_secondary_opioid_dose_per_24_hr = None
-#            self.secondary_opioid_MME_24_hr = None
-#
-#        if self.tertiary_opioid_med != None:
-#            self.tertiary_opioid_med = self.Assign_med_class(self.tertiary_opioid_med)
-#            #Same (as above) for all parts of tertiary medication!
-#            #self.tertiary_opioid_episode_dose = tertiary_opioid_episode_dose
-#            #self.tertiary_opioid_interdose_duration = tertiary_opioid_interdose_duration
-#            self.total_tertiary_opioid_dose_per_24_hr = self.Tertiary_total_dose_per_24_hr()
-#            self.tertiary_opioid_MME_24_hr = self.Calculate_MME_24_hr(self.tertiary_opioid_episode_dose,
-#                                                              self.tertiary_opioid_interdose_duration,
-#                                                              self.tertiary_opioid_med.MME_conversion_factor)
-#        else:
-#            self.tertiary_opioid_med = None
-#            self.tertiary_opiod_episode_dose = None
-#            self.tertiary_opioid_interdose_duration = None
-#            self.total_tertiary_opioid_dose_per_24_hr = None
-#            self.tertiary_opioid_MME_24_hr = None
-#
-#
-#
-#        if self.primary_opioid_med != None or self.secondary_opioid_med != None or self.tertiary_opioid_med != None:
-#            self.total_MME_24_hr = sum(filter(None,
-#                                          [self.prim_opioid_MME_24_hr,
-#                                           self.secondary_opioid_MME_24_hr,
-#                                           self.tertiary_opioid_MME_24_hr]
-#                                          ))
-#
-#        elif self.primary_opioid_med != None and self.secondary_opioid_med != None:
-#            self.total_MME_24_hr = (self.prim_opioid_MME_24_hr
-#                                    + self.secondary_opioid_MME_24_hr)
-#        elif self.primary_opioid_med != None:
-#            self.total_MME_24_hr = self.prim_opioid_MME_24_hr
-#        else:
-#            self.total_MME_24_hr = 0
 
         return
 
@@ -308,8 +244,8 @@ class Patient(Hydrocodone_Acetaminophen,
                                          self.primary_opioid_dif_dose_episode_dose_2,
                                          self.primary_opioid_dif_dose_episode_dose_3,
                                          self.primary_opioid_dif_dose_episode_dose_4]
-                list_to_remove = ['nan', 'NA', 'Nan', None]
-                primary_med_dose_list_remove_Nonetype = [ep_exists for ep_exists in primary_med_dose_list if ep_exists not in list_to_remove and not np.isnan(ep_exists)]
+                #list_to_remove = ['nan', 'NA', 'Nan', None]
+                primary_med_dose_list_remove_Nonetype = [ep_exists for ep_exists in primary_med_dose_list if ep_exists != None]
                 primary_total_dose_per_24_hr = sum(primary_med_dose_list_remove_Nonetype)
             else:
                 pass
@@ -327,8 +263,8 @@ class Patient(Hydrocodone_Acetaminophen,
                                            self.secondary_opioid_dif_dose_episode_dose_2,
                                            self.secondary_opioid_dif_dose_episode_dose_3,
                                            self.secondary_opioid_dif_dose_episode_dose_4]
-                list_to_remove = ['nan', 'NA', 'Nan', None]
-                secondary_med_dose_list_remove_Nonetype = [ep_exists for ep_exists in secondary_med_dose_list if ep_exists not in list_to_remove and not np.isnan(ep_exists)]
+                #list_to_remove = ['nan', 'NA', 'Nan', None]
+                secondary_med_dose_list_remove_Nonetype = [ep_exists for ep_exists in secondary_med_dose_list if ep_exists != None]
                 secondary_total_dose_per_24_hr = sum(secondary_med_dose_list_remove_Nonetype)
                 pass
             else:
