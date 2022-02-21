@@ -14,8 +14,8 @@ def api_get():
     Available from https://github.com/sburns/PyCap. doi:10.5281/zenodo.9917
     """
 
-    api_key = 'DEBB8885432E076DFCBA7BE262B8B228'
-    api_url = 'https://redcapcln4-prod.mayo.edu/redcap/api/'
+    # api_key = 
+    # api_url = 
 
     project = Project(api_url, api_key, verify_ssl=False)
     
@@ -48,8 +48,8 @@ def api_post(patient_month_vars):
     Available from https://github.com/sburns/PyCap. doi:10.5281/zenodo.9917
     """
 
-    api_key = 'DEBB8885432E076DFCBA7BE262B8B228'
-    api_url = 'https://redcapcln4-prod.mayo.edu/redcap/api/'
+    # api_key = 
+    # api_url =
 
     project = Project(api_url, api_key, verify_ssl=False)
 
